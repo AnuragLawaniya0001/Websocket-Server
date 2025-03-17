@@ -132,4 +132,4 @@ async def websocket_endpoint(websocket: WebSocket):
 if __name__ == "__main__":
     # Use the port from the environment variable or default to 8000
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run
+    uvicorn.run(app, host="0.0.0.0", port=port)
