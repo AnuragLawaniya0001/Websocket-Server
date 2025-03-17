@@ -2,6 +2,15 @@ from fastapi import FastAPI, WebSocket
 from fastapi.responses import HTMLResponse
 import os
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this to restrict origins if needed
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app = FastAPI()
 
