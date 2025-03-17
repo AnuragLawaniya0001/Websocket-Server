@@ -2,15 +2,6 @@ from fastapi import FastAPI, WebSocket
 from fastapi.responses import HTMLResponse
 import os
 import uvicorn
-from fastapi.middleware.cors import CORSMiddleware
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Adjust this to restrict origins if needed
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 app = FastAPI()
 
@@ -89,27 +80,26 @@ HTML_PAGE = """
     <div id="response"></div>
 
     <script>
-        // Use the window location to dynamically set the WebSocket URL
-        var ws = new WebSocket(`ws://${window.location.host}/ws`);
+    var ws = new WebSocket(`wss://${window.location.host}/ws`);
 
-        ws.onopen = function(){
-            document.getElementById("status").innerText = "Connected!";
-        };
+    ws.onopen = function() {
+        document.getElementById("status").innerText = "Connected!";
+    };
 
-        ws.onmessage = function(event) {
-            console.log("Response from server:", event.data);
-            document.getElementById("response").innerText = "Response: " + event.data;
-            document.getElementById("response").style.display = "block"; // Show response
-        };
+    ws.onmessage = function(event) {
+        console.log("Response from server:", event.data);
+        document.getElementById("response").innerText = "Response: " + event.data;
+        document.getElementById("response").style.display = "block"; // Show response
+    };
 
-        function sendCommand(){
-            var command = document.getElementById("command").value;
-            if (command.trim() !== "") {
-                ws.send(command);
-                document.getElementById("command").value = "";  // Clear input
-            }
+    function sendCommand() {
+        var command = document.getElementById("command").value;
+        if (command.trim() !== "") {
+            ws.send(command);
+            document.getElementById("command").value = "";  // Clear input
         }
-    </script>
+    }
+</script>
 </body>
 </html>
 """
@@ -124,6 +114,7 @@ async def websocket_endpoint(websocket: WebSocket):
     """Handle WebSocket connections for real-time command transmission."""
     await websocket.accept()
     connected_clients.add(websocket)
+    print("Client connected")
     try:
         while True:
             data = await websocket.receive_text()  # Receive text data
@@ -136,7 +127,9 @@ async def websocket_endpoint(websocket: WebSocket):
     except Exception as e:
         print(f"WebSocket Error: {e}")
     finally:
-        connected_clients.remove(websocket)  # Remove disconnected clients
+        print("Client disconnected")
+        connected_clients.remove(websocket)  
+        
 
 if __name__ == "__main__":
     # Use the port from the environment variable or default to 8000
