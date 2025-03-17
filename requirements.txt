@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+websockets
+requests
+SpeechRecognition
+pyttsx3
